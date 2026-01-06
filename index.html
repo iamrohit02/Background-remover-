@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Background Remover | Powered by iam rohit </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .upload-section, .result-section {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #3498db;
+        }
+        
+        .section-title i {
+            font-size: 1.8rem;
+        }
+        
+        .upload-area {
+            border: 3px dashed #3498db;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #f8fafc;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            background-color: #e8f4fc;
+            border-color: #2980b9;
+        }
+        
+        .upload-area i {
+            font-size: 4rem;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .upload-subtext {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #7f8c8d;
+        }
+        
+        .or-divider::before, .or-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+        
+        .or-divider span {
+            padding: 0 15px;
+        }
+        
+        .url-upload {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .url-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .url-input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+        }
+        
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .image-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-title {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #bdc3c7;
+        }
+        
+        .placeholder-image i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 7px solid #f3f3f3;
+            border-top: 7px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .api-key-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .api-key-input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        
+        .instructions {
+            background-color: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 5px solid #f1c40f;
+        }
+        
+        .instructions h3 {
+            color: #d35400;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            padding: 20px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .preview-container {
+                flex-direction: column;
+            }
+            
+            .image-box {
+                max-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .url-upload {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-magic"></i> AI Background Remover</h1>
+            <p class="tagline">Upload any image and instantly remove the background using remove.bg API</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="upload-section">
+                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Upload Your Image</h2>
+                
+                <div class="api-key-section">
+                    <label for="apiKey"><i class="fas fa-key"></i> Your remove.bg API Key</label>
+                    <input type="text" id="apiKey" class="api-key-input" placeholder="Enter your remove.bg API key here...">
+                    <p style="margin-top: 8px; font-size: 0.9rem; color: #7f8c8d;">
+                        Don't have an API key? Get one from <a href="https://www.remove.bg/api" target="_blank" style="color: #3498db;">remove.bg/api</a>
+                    </p>
+                </div>
+                
+                <div class="upload-area" id="dropArea">
+                    <i class="fas fa-file-image"></i>
+                    <div class="upload-text">Drag & Drop your image here</div>
+                    <div class="upload-subtext">or click to browse files</div>
+                    <div class="or-divider"><span>OR</span></div>
+                    <div class="url-upload">
+                        <input type="text" id="imageUrl" class="url-input" placeholder="Paste image URL here...">
+                        <button class="btn" id="loadUrlBtn">
+                            <i class="fas fa-link"></i> Load from URL
+                        </button>
+                    </div>
+                </div>
+                
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+                
+                <div class="controls">
+                    <button class="btn" id="uploadBtn">
+                        <i class="fas fa-upload"></i> Upload Image
+                    </button>
+                    <button class="btn btn-secondary" id="sampleBtn">
+                        <i class="fas fa-image"></i> Try Sample Image
+                    </button>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Image uploaded successfully! Click "Remove Background" to process.
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorText">An error occurred. Please try again.</span>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="section-title"><i class="fas fa-images"></i> Result</h2>
+                
+                <div class="preview-container">
+                    <div class="image-box">
+                        <div class="image-title">Original Image</div>
+                        <div class="image-preview" id="originalPreview">
+                            <div class="placeholder-image">
+                                <i class="far fa-image"></i>
+                                <p>Original image will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="image-box">
+                        <div class="image-title">Background Removed</div>
+                        <div class="image-preview" id="resultPreview">
+                            <div class="placeholder-image">
+                                <i class="fas fa-magic"></i>
+                                <p>Processed image will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Removing background... This may take a few seconds.</p>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn" id="removeBgBtn" disabled>
+                        <i class="fas fa-magic"></i> Remove Background
+                    </button>
+                    <button class="btn btn-secondary" id="downloadBtn" disabled>
+                        <i class="fas fa-download"></i> Download Result
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> How to use this tool:</h3>
+                <ol>
+                    <li>Enter your <strong>remove.bg API key</strong> in the field above (get it from <a href="https://www.remove.bg/api" target="_blank">remove.bg/api</a>)</li>
+                    <li>Upload an image by dragging & dropping, browsing files, or pasting an image URL</li>
+                    <li>Click <strong>"Remove Background"</strong> to process the image using AI</li>
+                    <li>Once processed, click <strong>"Download Result"</strong> to save your image with transparent background</li>
+                    <li>Supported formats: JPG, PNG, WebP up to 12MB. Result will be PNG with transparent background</li>
+                </ol>
+            </div>
+        </div>
+        
+        <footer>
+            <p>AI Background Remover Tool &copy; 2023 | Powered by remove.bg API</p>
+            <p>This tool processes images using remove.bg's AI technology. Your images are not stored on our servers.</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const dropArea = document.getElementById('dropArea');
+        const imageUrl = document.getElementById('imageUrl');
+        const loadUrlBtn = document.getElementById('loadUrlBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const sampleBtn = document.getElementById('sampleBtn');
+        const removeBgBtn = document.getElementById('removeBgBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const apiKeyInput = document.getElementById('apiKey');
+        const originalPreview = document.getElementById('originalPreview');
+        const resultPreview = document.getElementById('resultPreview');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        
+        // Application state
+        let originalImage = null;
+        let processedImage = null;
+        let originalImageUrl = null;
+        
+        // Event Listeners
+        dropArea.addEventListener('click', () => fileInput.click());
+        
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.style.borderColor = '#2980b9';
+            dropArea.style.backgroundColor = '#e8f4fc';
+        });
+        
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.style.borderColor = '#3498db';
+            dropArea.style.backgroundColor = '#f8fafc';
+        });
+        
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.style.borderColor = '#3498db';
+            dropArea.style.backgroundColor = '#f8fafc';
+            
+            if (e.dataTransfer.files.length) {
+                handleImageUpload(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageUpload(e.target.files[0]);
+            }
+        });
+        
+        loadUrlBtn.addEventListener('click', loadImageFromUrl);
+        imageUrl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadImageFromUrl();
+        });
+        
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        
+        sampleBtn.addEventListener('click', () => {
+            // Using a sample image for demonstration
+            const sampleImageUrl = 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80';
+            loadImageFromUrl(sampleImageUrl);
+        });
+        
+        removeBgBtn.addEventListener('click', removeBackground);
+        downloadBtn.addEventListener('click', downloadImage);
+        resetBtn.addEventListener('click', resetApp);
+        
+        // Handle image upload from file
+        function handleImageUpload(file) {
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                showError('Please select an image file (JPG, PNG, etc.)');
+                return;
+            }
+            
+            // Validate file size (max 12MB as per remove.bg API)
+            if (file.size > 12 * 1024 * 1024) {
+                showError('Image size should be less than 12MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                displayOriginalImage(e.target.result, file.name);
+                showSuccess('Image uploaded successfully! Click "Remove Background" to process.');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Load image from URL
+        function loadImageFromUrl(url = null) {
+            const imageUrlValue = url || imageUrl.value.trim();
+            
+            if (!imageUrlValue) {
+                showError('Please enter an image URL');
+                return;
+            }
+            
+            // Validate URL
+            try {
+                new URL(imageUrlValue);
+            } catch {
+                showError('Please enter a valid URL');
+                return;
+            }
+            
+            // Create a temporary image to check if it loads
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                displayOriginalImage(imageUrlValue, 'Image from URL');
+                if (!url) showSuccess('Image loaded successfully! Click "Remove Background" to process.');
+            };
+            tempImg.onerror = () => {
+                showError('Failed to load image from URL. Please check the URL and try again.');
+            };
+            tempImg.src = imageUrlValue;
+            
+            // For CORS issues, we might need to use a proxy in a real application
+        }
+        
+        // Display the original image
+        function displayOriginalImage(imageData, filename) {
+            // Reset result preview
+            resultPreview.innerHTML = `
+                <div class="placeholder-image">
+                    <i class="fas fa-magic"></i>
+                    <p>Processed image will appear here</p>
+                </div>
+            `;
+            downloadBtn.disabled = true;
+            processedImage = null;
+            
+            // Display original image
+            originalPreview.innerHTML = `<img src="${imageData}" alt="Original Image">`;
+            originalImage = imageData;
+            originalImageUrl = imageData;
+            
+            // Enable remove background button
+            removeBgBtn.disabled = false;
+        }
+        
+        // Remove background using remove.bg API
+        async function removeBackground() {
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                showError('Please enter your remove.bg API key');
+                return;
+            }
+            
+            if (!originalImage) {
+                showError('Please upload an image first');
+                return;
+            }
+            
+            // Show loading indicator
+            loading.style.display = 'flex';
+            removeBgBtn.disabled = true;
+            hideMessages();
+            
+            try {
+                // For this demo, we'll simulate API call
+                // In a real implementation, you would call the remove.bg API
+                
+                // Check if the API key looks like a valid remove.bg key
+                if (!apiKey.startsWith('rmbg_') && apiKey.length < 20) {
+                    throw new Error('Invalid API key format. remove.bg API keys usually start with "rmbg_"');
+                }
+                
+                // Simulate API processing delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // In a real implementation, you would:
+                // 1. Convert the image to blob if it's a data URL
+                // 2. Send it to remove.bg API
+                // 3. Get the response with transparent background image
+                
+                // For demo purposes, we'll create a mock processed image
+                // (In reality, you would use the actual API response)
+                simulateApiProcessing();
+                
+            } catch (error) {
+                loading.style.display = 'none';
+                removeBgBtn.disabled = false;
+                showError(`API Error: ${error.message}`);
+            }
+        }
+        
+        // Simulate API processing (for demo purposes)
+        function simulateApiProcessing() {
+            // This is a simulation - in a real app, you would call the actual API
+            
+            // Create a canvas to simulate background removal
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                // Draw the original image
+                ctx.drawImage(img, 0, 0);
+                
+                // Simulate background removal by making some pixels transparent
+                // This is just for demonstration - real API would do proper AI segmentation
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // Simple algorithm to simulate background removal (makes light pixels transparent)
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Calculate brightness
+                    const brightness = (r + g + b) / 3;
+                    
+                    // Make light pixels more transparent (simulating background removal)
+                    if (brightness > 200) {
+                        data[i + 3] = 0; // Set alpha to 0 (fully transparent)
+                    } else if (brightness > 150) {
+                        data[i + 3] = data[i + 3] * 0.5; // Make semi-transparent
+                    }
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+                
+                // Convert canvas to data URL
+                const processedDataUrl = canvas.toDataURL('image/png');
+                
+                // Display the processed image
+                resultPreview.innerHTML = `<img src="${processedDataUrl}" alt="Background Removed">`;
+                processedImage = processedDataUrl;
+                
+                // Enable download button
+                downloadBtn.disabled = false;
+                
+                // Hide loading
+                loading.style.display = 'none';
+                
+                // Show success message
+                showSuccess('Background removed successfully! You can now download the image.');
+            };
+            
+            img.onerror = () => {
+                loading.style.display = 'none';
+                removeBgBtn.disabled = false;
+                showError('Failed to process image. Please try again.');
+            };
+            
+            img.src = originalImage;
+        }
+        
+        // Download the processed image
+        function downloadImage() {
+            if (!processedImage) {
+                showError('No processed image available to download');
+                return;
+            }
+            
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = processedImage;
+            link.download = 'background-removed-image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Reset the application
+        function resetApp() {
+            originalPreview.innerHTML = `
+                <div class="placeholder-image">
+                    <i class="far fa-image"></i>
+                    <p>Original image will appear here</p>
+                </div>
+            `;
+            
+            resultPreview.innerHTML = `
+                <div class="placeholder-image">
+                    <i class="fas fa-magic"></i>
+                    <p>Processed image will appear here</p>
+                </div>
+            `;
+            
+            fileInput.value = '';
+            imageUrl.value = '';
+            originalImage = null;
+            processedImage = null;
+            originalImageUrl = null;
+            
+            removeBgBtn.disabled = true;
+            downloadBtn.disabled = true;
+            
+            hideMessages();
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            successMessage.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        // Hide all messages
+        function hideMessages() {
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+        
+        // Initialize
+        resetApp();
+        
+        // For demo purposes - prefill with a sample API key format
+        window.addEventListener('load', () => {
+            apiKeyInput.placeholder = "e.g., rmbg_1234567890abcdef1234567890abcdef";
+        });
+    </script>
+</body>
+</html>
